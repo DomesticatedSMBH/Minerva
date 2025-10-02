@@ -1,0 +1,42 @@
+body {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.navbar-brand {
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex-grow: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 1px;
+  margin: 0 1rem;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+.btn-lg {
+  border-radius: 0.75rem;
+}
+
+.toast {
+  box-shadow: 0 0.75rem 1.75rem rgba(33, 37, 41, 0.2);
+}
+
+main .card {
+  backdrop-filter: blur(4px);
+}

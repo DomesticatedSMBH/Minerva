@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard • Minerva{% endblock %}
+
+{% block content %}
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+      <h1 class="h2 fw-bold text-primary">Workspace tools</h1>
+      <p class="text-secondary mb-0">Select a category below to begin exploring Minerva's analytic toolkit.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+      <a class="btn btn-outline-primary" href="{% url 'account_logout' %}">Log out</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {% for category in tool_categories %}
+      <div class="col-md-6 col-xl-4">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle bg-primary-subtle text-primary-emphasis p-3 me-3">
+                <i class="bi bi-folder-fill fs-4"></i>
+              </div>
+              <div>
+                <h2 class="h5 mb-1">{{ category.name }}</h2>
+                <p class="text-muted small mb-0">{{ category.description }}</p>
+              </div>
+            </div>
+            <ul class="list-unstyled flex-grow-1">
+              {% for tool in category.tools %}
+                <li class="mb-3">
+                  <h3 class="h6 mb-1">{{ tool.name }}</h3>
+                  <p class="small text-secondary mb-2">{{ tool.description }}</p>
+                  <a class="btn btn-sm btn-primary" href="{% url tool.url_name %}">
+                    Launch tool
+                    <i class="bi bi-arrow-right-short ms-1"></i>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-secondary">Tools will appear here once they have been configured.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

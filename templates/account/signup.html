@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load account %}
+
+{% block title %}Create account • Minerva{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-xl-4 col-lg-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4 p-lg-5">
+          <h1 class="h3 text-center fw-semibold mb-4">Create your Minerva account</h1>
+          <form method="post" action="{% url 'account_signup' %}" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="mb-3">
+              <label for="id_email" class="form-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                class="form-control form-control-lg"
+                id="id_email"
+                value="{{ form.email.value|default:'' }}"
+                required
+              />
+              {% if form.email.errors %}
+                <div class="invalid-feedback d-block">{{ form.email.errors|join:', ' }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              <label for="id_password1" class="form-label">Password</label>
+              <input
+                type="password"
+                name="password1"
+                class="form-control form-control-lg"
+                id="id_password1"
+                required
+                autocomplete="new-password"
+              />
+              {% if form.password1.errors %}
+                <div class="invalid-feedback d-block">{{ form.password1.errors|join:', ' }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-4">
+              <label for="id_password2" class="form-label">Confirm password</label>
+              <input
+                type="password"
+                name="password2"
+                class="form-control form-control-lg"
+                id="id_password2"
+                required
+                autocomplete="new-password"
+              />
+              {% if form.password2.errors %}
+                <div class="invalid-feedback d-block">{{ form.password2.errors|join:', ' }}</div>
+              {% endif %}
+            </div>
+            {% if redirect_field_value %}
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Create account</button>
+          </form>
+          <p class="text-center small mt-4 mb-0">
+            Already have an account?
+            <a href="{% url 'account_login' %}">Sign in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

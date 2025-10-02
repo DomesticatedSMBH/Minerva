@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Car Cost Estimation • Minerva{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold text-primary mb-1">Car Cost Estimation</h1>
+      <p class="text-secondary mb-0">Evaluate acquisition and running costs over the full ownership horizon.</p>
+    </div>
+    <div class="text-muted small">
+      Data source blending:
+      {% if suggested_data.currency_code %}
+        <span class="badge text-bg-light">Currency auto-detected</span>
+      {% endif %}
+      {% if suggested_data.fuel_price_per_liter %}
+        <span class="badge text-bg-light">Fuel prices enriched</span>
+      {% endif %}
+      {% if suggested_data.electricity_price_per_kwh %}
+        <span class="badge text-bg-light">Electric tariffs enriched</span>
+      {% endif %}
+      {% if suggested_data.tax_rate_percent %}
+        <span class="badge text-bg-light">Tax rates enriched</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <h2 class="h5 fw-semibold text-primary mb-3">Location & market</h2>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label" for="id_country_code">Country code</label>
+                {{ form.country_code }}
+                {% include 'tools/includes/field_errors.html' with field=form.country_code %}
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="id_region">Region</label>
+                {{ form.region }}
+                {% include 'tools/includes/field_errors.html' with field=form.region %}
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="id_currency_code">Currency code</label>
+                {{ form.currency_code }}
+                {% include 'tools/includes/field_errors.html' with field=form.currency_code %}
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="id_local_tax_rate">Local tax rate (%)</label>
+                {{ form.local_tax_rate }}
+                {% include 'tools/includes/field_errors.html' with field=form.local_tax_rate %}
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <h2 class="h5 fw-semibold text-primary mb-3">Ownership scenario</h2>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label" for="id_ownership_period_years">Ownership years</label>
+                {{ form.ownership_period_years }}
+                {% include 'tools/includes/field_errors.html' with field=form.ownership_period_years %}
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="id_purchase_type">Acquisition method</label>
+                {{ form.purchase_type }}
+                {% include 'tools/includes/field_errors.html' with field=form.purchase_type %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-sm-6">
+                <label class="form-label" for="id_car_purchase_price">Vehicle price</label>
+                {{ form.car_purchase_price }}
+                {% include 'tools/includes/field_errors.html' with field=form.car_purchase_price %}
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="id_incentives_rebates">Incentives / rebates</label>
+                {{ form.incentives_rebates }}
+                {% include 'tools/includes/field_errors.html' with field=form.incentives_rebates %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-4">
+                <label class="form-label" for="id_finance_down_payment">Down payment</label>
+                {{ form.finance_down_payment }}
+                {% include 'tools/includes/field_errors.html' with field=form.finance_down_payment %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_finance_interest_rate">Finance APR (%)</label>
+                {{ form.finance_interest_rate }}
+                {% include 'tools/includes/field_errors.html' with field=form.finance_interest_rate %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_finance_term_months">Finance term (months)</label>
+                {{ form.finance_term_months }}
+                {% include 'tools/includes/field_errors.html' with field=form.finance_term_months %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-4">
+                <label class="form-label" for="id_lease_term_months">Lease term (months)</label>
+                {{ form.lease_term_months }}
+                {% include 'tools/includes/field_errors.html' with field=form.lease_term_months %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_lease_monthly_payment">Lease monthly payment</label>
+                {{ form.lease_monthly_payment }}
+                {% include 'tools/includes/field_errors.html' with field=form.lease_monthly_payment %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_lease_drive_off_cost">Lease drive-off cost</label>
+                {{ form.lease_drive_off_cost }}
+                {% include 'tools/includes/field_errors.html' with field=form.lease_drive_off_cost %}
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <h2 class="h5 fw-semibold text-primary mb-3">Running costs</h2>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label" for="id_annual_mileage">Annual mileage (km)</label>
+                {{ form.annual_mileage }}
+                {% include 'tools/includes/field_errors.html' with field=form.annual_mileage %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_fuel_type">Fuel type</label>
+                {{ form.fuel_type }}
+                {% include 'tools/includes/field_errors.html' with field=form.fuel_type %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_residual_value">Residual value</label>
+                {{ form.residual_value }}
+                {% include 'tools/includes/field_errors.html' with field=form.residual_value %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label class="form-label" for="id_fuel_consumption_per_100km">Fuel consumption /100km</label>
+                {{ form.fuel_consumption_per_100km }}
+                {% include 'tools/includes/field_errors.html' with field=form.fuel_consumption_per_100km %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="id_electricity_consumption_per_100km">Electric consumption /100km</label>
+                {{ form.electricity_consumption_per_100km }}
+                {% include 'tools/includes/field_errors.html' with field=form.electricity_consumption_per_100km %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label class="form-label" for="id_gas_price_per_liter">Fuel price per liter</label>
+                {{ form.gas_price_per_liter }}
+                {% include 'tools/includes/field_errors.html' with field=form.gas_price_per_liter %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="id_electricity_price_per_kwh">Electricity price per kWh</label>
+                {{ form.electricity_price_per_kwh }}
+                {% include 'tools/includes/field_errors.html' with field=form.electricity_price_per_kwh %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label class="form-label" for="id_insurance_cost_annual">Insurance annual</label>
+                {{ form.insurance_cost_annual }}
+                {% include 'tools/includes/field_errors.html' with field=form.insurance_cost_annual %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="id_maintenance_cost_annual">Maintenance annual</label>
+                {{ form.maintenance_cost_annual }}
+                {% include 'tools/includes/field_errors.html' with field=form.maintenance_cost_annual %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-4">
+                <label class="form-label" for="id_registration_fees_annual">Registration annual</label>
+                {{ form.registration_fees_annual }}
+                {% include 'tools/includes/field_errors.html' with field=form.registration_fees_annual %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_parking_cost_annual">Parking annual</label>
+                {{ form.parking_cost_annual }}
+                {% include 'tools/includes/field_errors.html' with field=form.parking_cost_annual %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="id_other_recurring_costs">Other annual costs</label>
+                {{ form.other_recurring_costs }}
+                {% include 'tools/includes/field_errors.html' with field=form.other_recurring_costs %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-6">
+                <label class="form-label" for="id_charging_installation_cost">Charging infrastructure</label>
+                {{ form.charging_installation_cost }}
+                {% include 'tools/includes/field_errors.html' with field=form.charging_installation_cost %}
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <button class="btn btn-primary btn-lg w-100" type="submit">Estimate cost of ownership</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h2 class="h5 fw-semibold text-primary">Regional data suggestions</h2>
+          <p class="small text-secondary">Lookup uses ISO country code {% if region %}and region "{{ region }}"{% else %}{% endif %}. Values are applied only when you leave fields empty.</p>
+          <ul class="list-unstyled small mb-0">
+            <li>
+              <span class="text-muted">Currency:</span>
+              <span class="fw-semibold">{{ suggested_data.currency_code|default:'—' }}</span>
+            </li>
+            <li>
+              <span class="text-muted">Fuel price (per liter):</span>
+              <span class="fw-semibold">{{ suggested_data.fuel_price_per_liter|default:'—' }}</span>
+            </li>
+            <li>
+              <span class="text-muted">Electricity price (per kWh):</span>
+              <span class="fw-semibold">{{ suggested_data.electricity_price_per_kwh|default:'—' }}</span>
+            </li>
+            <li>
+              <span class="text-muted">Tax rate (%):</span>
+              <span class="fw-semibold">{{ suggested_data.tax_rate_percent|default:'—' }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {% if results %}
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4">
+            <h2 class="h5 fw-semibold text-success mb-3">Estimated totals</h2>
+            <div class="display-6 fw-bold text-success mb-2">
+              {{ form.cleaned_data.currency_code }} {{ results.total_cost|intcomma }}
+            </div>
+            <p class="text-muted small mb-4">Total cost over {{ form.cleaned_data.ownership_period_years }} year(s). Monthly average: <strong>{{ form.cleaned_data.currency_code }} {{ results.monthly_cost|intcomma }}</strong></p>
+
+            <h3 class="h6 fw-semibold">Breakdown</h3>
+            <ul class="list-group list-group-flush mb-3">
+              {% for label, value in results.breakdown.items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ label }}</span>
+                  <span class="fw-semibold">{{ form.cleaned_data.currency_code }} {{ value|intcomma }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+
+            {% if results.acquisition_breakdown %}
+              <h3 class="h6 fw-semibold">Acquisition detail</h3>
+              <ul class="list-group list-group-flush mb-3">
+                {% for label, value in results.acquisition_breakdown.items %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ label }}</span>
+                    <span class="fw-semibold">{{ form.cleaned_data.currency_code }} {{ value|intcomma }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <div class="alert alert-info small mb-0">
+              Annual energy cost: {{ form.cleaned_data.currency_code }} {{ results.annual_fuel_cost|add:results.annual_electric_cost|intcomma }}
+              · Annual recurring total: {{ form.cleaned_data.currency_code }} {{ results.annual_recurring_total|intcomma }}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center text-secondary py-5">
+            <i class="bi bi-calculator display-5 text-primary mb-3"></i>
+            <p class="mb-0">Provide your scenario inputs to generate a tailored ownership model.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

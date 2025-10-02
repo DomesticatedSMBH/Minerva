@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome • Minerva Portal{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center align-items-center g-5">
+    <div class="col-lg-6">
+      <h1 class="display-4 fw-bold text-primary">Plan smarter automotive ownership.</h1>
+      <p class="lead text-secondary">
+        Minerva centralises the financial insights you need to make confident car buying decisions.
+        Explore calculators, structured workflows, and curated knowledge tuned for professional desktops.
+      </p>
+      <div class="d-flex gap-3 mt-4">
+        <a class="btn btn-primary btn-lg px-4" href="{% url 'account_signup' %}">Create an account</a>
+        <a class="btn btn-outline-primary btn-lg px-4" href="{% url 'account_login' %}">Log in</a>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+          <h2 class="h4 fw-semibold mb-3">What you get</h2>
+          <ul class="list-unstyled lh-lg mb-0">
+            <li><i class="bi bi-graph-up-arrow text-primary me-2"></i>Advanced calculators designed for long-term planning.</li>
+            <li><i class="bi bi-cloud-arrow-down text-primary me-2"></i>Automatic regional data enrichment where available.</li>
+            <li><i class="bi bi-people text-primary me-2"></i>Collaboration-ready workspace for your team.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
